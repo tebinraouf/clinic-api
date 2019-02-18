@@ -193,3 +193,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+bin/
+include/
+lib/
