@@ -3,7 +3,6 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity
 )
-
 from db import DBConnector
 
 app = Flask(__name__)
@@ -11,9 +10,9 @@ app = Flask(__name__)
 
 @app.route("/dbtest", methods=['GET'])
 def dbtest():
-    x = DBConnector()
-    x.getName() 
-    return jsonify({"db": True})
+    db = DBConnector()
+     
+    return jsonify({'patients': db.getPatients()})
     
 
 # Setup the Flask-JWT-Extended extension
