@@ -198,3 +198,4 @@ ENV/
 bin/
 include/
 lib/
+.vscode/
