@@ -1,6 +1,38 @@
 from flask import Flask, jsonify, abort, make_response, request, url_for
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
+
+from db import DBConnector
 
 app = Flask(__name__)
+
+
+@app.route("/dbtest", methods=['GET'])
+def dbtest():
+    x = DBConnector()
+    x.getName() 
+    return jsonify({"db": True})
+    
+
+# Setup the Flask-JWT-Extended extension
+app.config['JWT_SECRET_KEY'] = 'clinic-secret-key'
+jwt = JWTManager(app)
+
+
+@app.route('/login', methods=['GET'])
+def login():
+    access_token = create_access_token(identity='tebin')
+    return jsonify(access_token=access_token), 200
+
+@app.route('/protected', methods=['GET'])
+@jwt_required
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
 patients = [
     {
         'id': 1,
