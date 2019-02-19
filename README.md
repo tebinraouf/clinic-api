@@ -4,9 +4,9 @@ A Python API written in Flask
 # How to run
 - Development
     ```python
-    FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run
+    FLASK_APP=app.py FLASK_DEBUG=1 python3 -m flask run
     ```
 - Production
     ```python
-    python waitress_server.py
+    python3 waitress_server.py
     ```
