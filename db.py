@@ -55,6 +55,22 @@ class DBConnector:
         return patients
     
     def getProcedures(self):
+        '''Get all the procedures.
+        
+        Returns:
+            an array of procedure objects
+            procedure = {
+                "id": id,
+                "name": name,
+                "price": price,
+                "note": note,
+                "patientID": patientID,
+                "date": date,
+                "storageID": storageID
+            }
+            [procedure]
+        '''
+
         query = ("SELECT * FROM mydb.Procedure")
         self.cursor.execute(query)
         procedures = []
@@ -73,6 +89,24 @@ class DBConnector:
         self._connection.close()
         return procedures
 
+    def getProcedureTypes(self):
+        '''Get all procedure types
+        
+        Returns:
+            an array -- an array of all procedure types
+        '''
+        query = "SELECT * FROM mydb.ProcedureList"
+        self.cursor.execute(query)
+        proceduresList = []
+        for (id, name) in self.cursor:
+            aProcedure = {
+                "id": id,
+                "name": name
+            }
+            proceduresList.append(aProcedure)
+        self.cursor.close()
+        self._connection.close()
+        return proceduresList
 ####                        #####
 ####        GET BY ID       #####
 ####                        #####
@@ -119,6 +153,23 @@ class DBConnector:
         return patient
 
     def getProcedure(self, id):
+        '''Get a patient's procedure by its own id.
+        
+        Arguments:
+            id {int} -- procedure type id
+        
+        Returns:
+            a patient procedure object -- if the id exists, it returns an object which includes id, name, price, note, patientID, date, and storage ID
+            procedure = {
+                "id": id,
+                "name": name,
+                "price": price,
+                "note": note,
+                "patientID": patientID,
+                "date": date,
+                "storageID": storageID
+            }
+        '''
         query = "SELECT * FROM mydb.Procedure WHERE id=" + str(id)
         self.cursor.execute(query)
         procedure = {} 
@@ -137,6 +188,14 @@ class DBConnector:
         return procedure
 
     def getProcedureByPatient(self, id):
+        '''Get all the procedures associated with a patient id
+        
+        Arguments:
+            id {int} -- patient id
+        
+        Returns:
+            an array of procedures -- an array of all procedures of a patient
+        '''
         query = "SELECT * FROM mydb.Procedure WHERE patientID=" + str(id)
         self.cursor.execute(query)
         procedures = [] 
@@ -154,3 +213,28 @@ class DBConnector:
         self.cursor.close()
         self._connection.close()
         return procedures
+
+    def getProcedureType(self, id):
+        '''Get a procedure type by its id
+        
+        Arguments:
+            id {int} -- the id of the procedure type
+        
+        Returns:
+            a type object -- includes id and name of the object
+            aType = {
+                "id" : id,
+                "name": name
+            }
+        '''
+        query = "SELECT * FROM mydb.ProcedureList WHERE id=" + str(id)
+        self.cursor.execute(query)
+        aType = {}
+        for (id, name) in self.cursor:
+            aType = {
+                "id" : id,
+                "name": name
+            }
+        self.cursor.close()
+        self._connection.close()
+        return aType
