@@ -74,6 +74,10 @@ def getProcedures():
     db = DBConnector()
     return jsonify({'procedures': db.getProcedures()})
 
+@app.route("/api/v1.0/procedureTypes", methods=["GET"])
+def getProcedureTypes():
+    db = DBConnector()
+    return jsonify({'types': db.getProcedureTypes()})
 
 ####                        #####
 ####        GET BY ID       #####
@@ -101,7 +105,7 @@ def getProcedure(procedureID):
     result = db.getProcedure(procedureID)
     if len(result) == 0:
         abort(404)
-    return jsonify({'procedures': result})
+    return jsonify({'procedure': result})
 
 @app.route("/api/v1.0/procedures/patients/<int:patientID>", methods=["GET"])
 def getProcedureByPatient(patientID):
@@ -111,7 +115,13 @@ def getProcedureByPatient(patientID):
         abort(404) 
     return jsonify({'procedures': result})
 
-
+@app.route("/api/v1.0/procedureTypes/<int:typeID>", methods=["GET"])
+def getProcedureType(typeID):
+    db = DBConnector()
+    result = db.getProcedureType(typeID)
+    if len(result) == 0:
+        abort(404)
+    return jsonify({'type': result})
 
 
 
