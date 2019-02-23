@@ -12,7 +12,7 @@ app = Flask(__name__)
 def dbtest():
     db = DBConnector()
      
-    return jsonify({'patients': db.getPatients()})
+    return jsonify({'patient': db.getPatient(7)})
     
 
 # Setup the Flask-JWT-Extended extension
@@ -46,11 +46,18 @@ patients = [
         'age': 27
     }
 ]
-
+####                        #####
+####        ERROR           #####
+####                        #####
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
+
+
+####                        #####
+####        GET ALL         #####
+####                        #####
 @app.route("/api/v1.0/patients", methods=["GET"])
 def getPatients():
     '''
@@ -59,8 +66,18 @@ def getPatients():
         Returns:
             a list of patient objects
     '''
-    return jsonify({'patients': [make_public_patient(patient) for patient in patients]})
- 
+    db = DBConnector()
+    return jsonify({'patients': [make_public_patient(patient) for patient in db.getPatients()]})
+
+@app.route("/api/v1.0/procedures", methods=["GET"])
+def getProcedures():
+    db = DBConnector()
+    return jsonify({'procedures': db.getProcedures()})
+
+
+####                        #####
+####        GET BY ID       #####
+####                        #####
 @app.route("/api/v1.0/patients/<int:patientID>", methods=["GET"])
 def getPatient(patientID):
     '''
@@ -72,11 +89,38 @@ def getPatient(patientID):
         Returns:
             a patient object
     '''
-    patient = [patient for patient in patients if patient['id'] == patientID]
-    if len(patient) == 0:
+    db = DBConnector()
+    result = db.getPatient(patientID)
+    if len(result) == 0:
         abort(404)
-    return jsonify({'patient': make_public_patient(patient[0])})
+    return jsonify({'patient': make_public_patient(result)})
 
+@app.route("/api/v1.0/procedures/<int:procedureID>", methods=["GET"])
+def getProcedure(procedureID):
+    db = DBConnector()
+    result = db.getProcedure(procedureID)
+    if len(result) == 0:
+        abort(404)
+    return jsonify({'procedures': result})
+
+@app.route("/api/v1.0/procedures/patients/<int:patientID>", methods=["GET"])
+def getProcedureByPatient(patientID):
+    db = DBConnector()
+    result = db.getProcedureByPatient(patientID)
+    if len(result) == 0:
+        abort(404) 
+    return jsonify({'procedures': result})
+
+
+
+
+
+
+
+
+####                        #####
+####        CREATE          #####
+####                        #####
 @app.route("/api/v1.0/patients", methods=["POST"])
 def createPatient():
     '''
@@ -98,6 +142,13 @@ def createPatient():
     patients.append(patient)
     return jsonify({'patient': patient}), 201
 
+
+
+
+
+####                        #####
+####        UPDATE          #####
+####                        #####
 @app.route("/api/v1.0/patients/<int:patientID>", methods=["PUT"])
 def updatePatient(patientID):
     '''
@@ -119,6 +170,12 @@ def updatePatient(patientID):
     patient['age'] = request.json.get('age', patient['age'])
     return jsonify({'patient': patient})
 
+
+
+
+####                        #####
+####        DELETE          #####
+####                        #####
 @app.route("/api/v1.0/patients/<int:patientID>", methods=["DELETE"])
 def deletePatient(patientID):
     '''
