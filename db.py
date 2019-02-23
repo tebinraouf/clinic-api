@@ -107,6 +107,7 @@ class DBConnector:
         self.cursor.close()
         self._connection.close()
         return proceduresList
+
 ####                        #####
 ####        GET BY ID       #####
 ####                        #####
@@ -238,3 +239,12 @@ class DBConnector:
         self.cursor.close()
         self._connection.close()
         return aType
+    
+####                        #####
+####        Create          #####
+####                        #####
+    def createPatient(firstName, lastName, mobile, gender, email, note, storageID, date, age):
+        query = ("""
+        INSERT INTO Patient (firstName, lastName, mobile, gender, email, note, storageID, date, age) 
+        VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}',{9}) """).format(firstName, lastName, mobile, gender, email, note, storageID, date, age)
+        print(query)

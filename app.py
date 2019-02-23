@@ -142,7 +142,9 @@ def createPatient():
     '''
     if not request.json or not 'firstName' in request.json:
         abort(400)
-    print(request.json)
+    #TODO: if request doesn't have all the fields, it should be okay. currently it gives you error
+    db = DBConnector()
+    db.createPatient(request.json['firstName'], request.json['lastName'], request.json['mobile'], request.json['gender'], request.json['email'],request.json['note'], request.json['storageID'], request.json['date'], request.json['age'])
     patient = {
         'id': patients[-1]['id'] + 1,
         'firstName': request.json['firstName'],
