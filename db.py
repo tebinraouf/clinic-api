@@ -50,8 +50,6 @@ class DBConnector:
                 "age": age
             }
             patients.append(patient)
-        self.cursor.close()
-        self._connection.close()
         return patients
     
     def getProcedures(self):
@@ -85,8 +83,6 @@ class DBConnector:
                 "storageID": storageID
             }
             procedures.append(procedure)
-        self.cursor.close()
-        self._connection.close()
         return procedures
 
     def getProcedureTypes(self):
@@ -104,8 +100,6 @@ class DBConnector:
                 "name": name
             }
             proceduresList.append(aProcedure)
-        self.cursor.close()
-        self._connection.close()
         return proceduresList
 
 ####                        #####
@@ -149,8 +143,6 @@ class DBConnector:
                 "date": date,
                 "age": age
             }
-        self.cursor.close()
-        self._connection.close()
         return patient
 
     def getProcedure(self, id):
@@ -184,8 +176,6 @@ class DBConnector:
                 "date": date,
                 "storageID": storageID
             }
-        self.cursor.close()
-        self._connection.close()
         return procedure
 
     def getProcedureByPatient(self, id):
@@ -211,8 +201,6 @@ class DBConnector:
                 "storageID": storageID
             }
             procedures.append(procedure)
-        self.cursor.close()
-        self._connection.close()
         return procedures
 
     def getProcedureType(self, id):
@@ -236,15 +224,22 @@ class DBConnector:
                 "id" : id,
                 "name": name
             }
-        self.cursor.close()
-        self._connection.close()
         return aType
     
 ####                        #####
 ####        Create          #####
 ####                        #####
-    def createPatient(firstName, lastName, mobile, gender, email, note, storageID, date, age):
+    def createPatient(self, patient):
         query = ("""
         INSERT INTO Patient (firstName, lastName, mobile, gender, email, note, storageID, date, age) 
-        VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}',{9}) """).format(firstName, lastName, mobile, gender, email, note, storageID, date, age)
-        print(query)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""")
+        values = (patient['firstName'], patient['lastName'], patient['mobile'], patient['gender'], patient['email'], patient['note'], patient['storageID'], patient['date'], patient['age'])
+        self.cursor.execute(query, values)
+        lasrowid = self.cursor.lastrowid
+        self._connection.commit()
+        result = self.getPatient(lasrowid)
+        return result
+
+    def close(self):
+        self.cursor.close()
+        self._connection.close()

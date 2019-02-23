@@ -67,17 +67,23 @@ def getPatients():
             a list of patient objects
     '''
     db = DBConnector()
-    return jsonify({'patients': [make_public_patient(patient) for patient in db.getPatients()]})
+    result = db.getPatients()
+    db.close()
+    return jsonify({'patients': [make_public_patient(patient) for patient in result]})
 
 @app.route("/api/v1.0/procedures", methods=["GET"])
 def getProcedures():
     db = DBConnector()
-    return jsonify({'procedures': db.getProcedures()})
+    result = db.getProcedures()
+    db.close()
+    return jsonify({'procedures': result})
 
 @app.route("/api/v1.0/procedureTypes", methods=["GET"])
 def getProcedureTypes():
     db = DBConnector()
-    return jsonify({'types': db.getProcedureTypes()})
+    result = db.getProcedureTypes()
+    db.close()
+    return jsonify({'types': result})
 
 ####                        #####
 ####        GET BY ID       #####
@@ -97,6 +103,7 @@ def getPatient(patientID):
     result = db.getPatient(patientID)
     if len(result) == 0:
         abort(404)
+    db.close()
     return jsonify({'patient': make_public_patient(result)})
 
 @app.route("/api/v1.0/procedures/<int:procedureID>", methods=["GET"])
@@ -105,6 +112,7 @@ def getProcedure(procedureID):
     result = db.getProcedure(procedureID)
     if len(result) == 0:
         abort(404)
+    db.close()
     return jsonify({'procedure': result})
 
 @app.route("/api/v1.0/procedures/patients/<int:patientID>", methods=["GET"])
@@ -113,6 +121,7 @@ def getProcedureByPatient(patientID):
     result = db.getProcedureByPatient(patientID)
     if len(result) == 0:
         abort(404) 
+    db.close()
     return jsonify({'procedures': result})
 
 @app.route("/api/v1.0/procedureTypes/<int:typeID>", methods=["GET"])
@@ -121,6 +130,7 @@ def getProcedureType(typeID):
     result = db.getProcedureType(typeID)
     if len(result) == 0:
         abort(404)
+    db.close()
     return jsonify({'type': result})
 
 
@@ -140,19 +150,33 @@ def createPatient():
         Returns:
             The newly created patient.
     '''
-    if not request.json or not 'firstName' in request.json:
-        abort(400)
-    #TODO: if request doesn't have all the fields, it should be okay. currently it gives you error
-    db = DBConnector()
-    db.createPatient(request.json['firstName'], request.json['lastName'], request.json['mobile'], request.json['gender'], request.json['email'],request.json['note'], request.json['storageID'], request.json['date'], request.json['age'])
+    json = request.json
+    if not json or not 'firstName' in json:
+        abort(400)    
+    lastName = '' if not json.get('lastName') else json.get('lastName')
+    mobile = '' if not json.get('mobile') else json.get('mobile')
+    gender = '' if not json.get('gender') else json.get('gender')
+    email = '' if not json.get('email') else json.get('email')
+    note = '' if not json.get('note') else json.get('note')
+    storageID = '' if not json.get('storageID') else json.get('storageID')
+    date = '' if not json.get('date') else json.get('date')
+    age = 0 if not json.get('age') else json.get('age')
+
     patient = {
-        'id': patients[-1]['id'] + 1,
         'firstName': request.json['firstName'],
-        'lastName': request.json['lastName'],
-        'age': request.json['age']
+        'lastName': lastName,
+        'mobile' : mobile,
+        'gender' : gender,
+        'email' : email,
+        'note' : note,
+        'storageID' : storageID,
+        'date' : date,
+        'age' : age
     }
-    patients.append(patient)
-    return jsonify({'patient': patient}), 201
+    db = DBConnector()
+    result = db.createPatient(patient)
+    db.close()
+    return jsonify({'patient': result}), 201
 
 
 
