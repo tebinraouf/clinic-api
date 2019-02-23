@@ -11,7 +11,9 @@ class DBConnector:
             database='mydb')
         self.cursor = self._connection.cursor(buffered=True)
 
-
+####                        #####
+####        GET ALL         #####
+####                        #####
     def getPatients(self):
         '''Get all the patients from the database
         
@@ -51,7 +53,29 @@ class DBConnector:
         self.cursor.close()
         self._connection.close()
         return patients
+    
+    def getProcedures(self):
+        query = ("SELECT * FROM mydb.Procedure")
+        self.cursor.execute(query)
+        procedures = []
+        for (id, note, price, patientID, date, storageID, name) in self.cursor:
+            procedure = {
+                "id": id,
+                "name": name,
+                "price": price,
+                "note": note,
+                "patientID": patientID,
+                "date": date,
+                "storageID": storageID
+            }
+            procedures.append(procedure)
+        self.cursor.close()
+        self._connection.close()
+        return procedures
 
+####                        #####
+####        GET BY ID       #####
+####                        #####
     def getPatient(self, id):
         '''Get a patient with ID
            
@@ -93,25 +117,6 @@ class DBConnector:
         self.cursor.close()
         self._connection.close()
         return patient
-
-    def getProcedures(self):
-        query = ("SELECT * FROM mydb.Procedure")
-        self.cursor.execute(query)
-        procedures = []
-        for (id, note, price, patientID, date, storageID, name) in self.cursor:
-            procedure = {
-                "id": id,
-                "name": name,
-                "price": price,
-                "note": note,
-                "patientID": patientID,
-                "date": date,
-                "storageID": storageID
-            }
-            procedures.append(procedure)
-        self.cursor.close()
-        self._connection.close()
-        return procedures
 
     def getProcedure(self, id):
         query = "SELECT * FROM mydb.Procedure WHERE id=" + str(id)
