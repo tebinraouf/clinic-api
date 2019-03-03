@@ -235,9 +235,20 @@ class DBConnector:
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""")
         values = (patient['firstName'], patient['lastName'], patient['mobile'], patient['gender'], patient['email'], patient['note'], patient['storageID'], patient['date'], patient['age'])
         self.cursor.execute(query, values)
-        lasrowid = self.cursor.lastrowid
+        lastrowid = self.cursor.lastrowid
         self._connection.commit()
-        result = self.getPatient(lasrowid)
+        result = self.getPatient(lastrowid)
+        return result
+
+    def createProcedure(self, procedure):
+        query = ("""
+        INSERT INTO mydb.Procedure (name, note, price, date, storageID, patientID) 
+        VALUES (%s,%s,%s,%s,%s,%s)""")
+        values = (procedure['name'], procedure['note'], procedure['price'], procedure['date'], procedure['storageID'], procedure['patientID'])
+        self.cursor.execute(query, values)
+        lastrowid = self.cursor.lastrowid
+        self._connection.commit()
+        result = self.getProcedure(lastrowid)
         return result
 
     def close(self):

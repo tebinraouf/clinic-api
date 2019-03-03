@@ -179,6 +179,32 @@ def createPatient():
     return jsonify({'patient': result}), 201
 
 
+@app.route("/api/v1.0/procedures", methods=["POST"])
+def createProcedure():
+
+    json = request.json
+    db = DBConnector()
+    results = []
+    for procedure in json:
+        name = abort(400) if not procedure.get('name') else procedure.get('name')
+        note = abort(400) if not procedure.get('note') else procedure.get('note')
+        price = abort(400) if not procedure.get('price') else procedure.get('price')
+        date = abort(400) if not procedure.get('date') else procedure.get('date')
+        storageID = abort(400) if not procedure.get('storageID') else procedure.get('storageID')
+        patientID = abort(400) if not procedure.get('patientID') else procedure.get('patientID')
+        procedure = {
+            'name' : name,
+            'note' : note,
+            'price' : price,
+            'date' : date,
+            'storageID': storageID, 
+            'patientID': patientID
+        }
+        result = db.createProcedure(procedure)
+        results.append(result)
+    db.close()
+    return jsonify({'procedures': results}), 201
+
 
 
 
